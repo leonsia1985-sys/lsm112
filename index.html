@@ -462,6 +462,52 @@
         setBounds();
 
         L.Icon.Default.imagePath = 'https://unpkg.com/leaflet@1.9.4/dist/images/';
+       // ... (위쪽 qgis2web 코드들 생략) ...
+        
+        setBounds();
+
+        L.Icon.Default.imagePath = 'https://unpkg.com/leaflet@1.9.4/dist/images/';
+
+        // ==========================================
+        // 💡 여기에 한국문화정보원 독립서점 API 코드를 붙여넣습니다!
+        // ==========================================
+        const apiKey = 'e006aa61-8ce2-4b67-b828-ba3e15ef2aa5';
+        
+        // 🚨 중요: 'API_상세주소' 부분은 꼭 매뉴얼의 요청 주소로 바꿔주세요.
+        const apiUrl = `https://api.kcisa.kr/openapi/API_상세주소?serviceKey=${apiKey}&numOfRows=100&_type=json`;
+
+        fetch(apiUrl)
+          .then(response => response.json())
+          .then(data => {
+            console.log("독립서점 API 데이터:", data);
+
+            if (data.response && data.response.body && data.response.body.items) {
+              let bookstores = data.response.body.items.item;
+              if (!Array.isArray(bookstores)) {
+                bookstores = [bookstores];
+              }
+
+              bookstores.forEach(store => {
+                // 🚨 중요: latitude, longitude, title은 F12 콘솔을 보고 실제 데이터 이름으로 수정하세요.
+                const lat = store.latitude; 
+                const lng = store.longitude;
+                const name = store.title; 
+
+                if (lat && lng) {
+                  L.marker([lat, lng])
+                   .addTo(map)
+                   .bindPopup(`<b>${name}</b>`);
+                }
+              });
+            }
+          })
+          .catch(error => {
+            console.error('API 호출 중 에러 발생:', error);
+          });
+        // ==========================================
+        // API 코드 끝
+        // ==========================================
+
         </script>        
     </body>
 </html>
